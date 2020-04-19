@@ -14,6 +14,16 @@ class LinkedListTest(_ut.TestCase):
         self.list.append('a')
         self.assertEqual(size + 1, len(self.list))
 
+    def test_iter_empty(self):
+        i = iter(self.list)
+        with self.assertRaises(StopIteration):
+            next(i)
+
+    def test_iter_populated(self):
+        self.list = LinkedList([1, 2, 3])
+        i = iter(self.list)
+        self.assertSequenceEqual([1, 2, 3], list(i))
+
     def test_getitem_invalid_index_type(self):
         '''Invalid index type should raise TypeError.'''
         with self.assertRaises(TypeError):
