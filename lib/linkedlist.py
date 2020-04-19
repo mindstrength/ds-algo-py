@@ -91,6 +91,26 @@ class LinkedList(_MS):  # pylint: disable=too-many-ancestors
             cur = cur.right
             yield cur.value
 
+    def __reversed__(self):
+        cur = self.tail
+        while cur.left is not self.head:
+            cur = cur.left
+            yield cur.value
+
+    def reverse(self):
+        old_head, old_tail = self.head, self.tail
+        cur = self.head
+        while cur is not None:
+            old_left, old_right = cur.left, cur.right
+            cur.left = cur.right
+            cur.right = old_left
+            cur = old_right
+        self.head, self.tail = old_tail, old_head
+
+    def clear(self):
+        self.head.link_as_right(self.tail)
+        self.count = 0
+
     def insert(self, index, value):
         index = self._verify_index(index, inclusive=True)
         left = self._getnode(index)

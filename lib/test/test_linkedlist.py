@@ -24,6 +24,30 @@ class LinkedListTest(_ut.TestCase):
         i = iter(self.list)
         self.assertSequenceEqual([1, 2, 3], list(i))
 
+    def test_reversed_empty(self):
+        r = reversed(self.list)
+        with self.assertRaises(StopIteration):
+            next(r)
+
+    def test_reversed_populated(self):
+        self.list = LinkedList([1, 2, 3])
+        r = reversed(self.list)
+        self.assertSequenceEqual([3, 2, 1], list(r))
+
+    def test_reverse_empty(self):
+        self.list.reverse()
+        self.assertSequenceEqual([], self.list)
+
+    def test_reverse_populated(self):
+        self.list = LinkedList([1, 2, 3])
+        self.list.reverse()
+        self.assertSequenceEqual([3, 2, 1], self.list)
+
+    def test_clear(self):
+        self.list = LinkedList([1, 2, 3])
+        self.list.clear()
+        self.assertSequenceEqual([], self.list)
+
     def test_getitem_invalid_index_type(self):
         '''Invalid index type should raise TypeError.'''
         with self.assertRaises(TypeError):
