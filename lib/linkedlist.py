@@ -6,14 +6,14 @@ from collections.abc import MutableSequence as _MS, Collection as _Col
 
 
 @_data
-class _Node:
+class _Node: # pylint: disable=too-few-public-methods
     '''A node within a linked list.'''
     value: _Any
     left: _Any
     right: _Any
 
 
-class LinkedList(_MS):
+class LinkedList(_MS): # pylint: disable=too-many-ancestors
     '''A simplified, doubly-linked list.'''
 
     def __init__(self, collection: _Col = None):
