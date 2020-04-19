@@ -11,6 +11,6 @@ pipelines:
         caches:
           - pip
         script: # Modify the commands below to build your repository.
-          - pip install -r config\pip_requirements.txt
+          - pip install -r config/pip_requirements.txt
           - python -m unittest discover --start-directory lib --verbose
           - pylint lib --ignore test
