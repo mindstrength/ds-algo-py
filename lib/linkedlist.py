@@ -6,20 +6,36 @@ from collections.abc import MutableSequence as _MS, Collection as _Col
 
 
 @_data
-class _Node: # pylint: disable=too-few-public-methods
+class _Node:
     '''A node within a linked list.'''
     value: _Any
     left: _Any
     right: _Any
 
+    def link_as_right(self, node):
+        '''Set node as right link, and self as node's left link.
+        Returns self's previous right node.'''
+        old = self.right
+        self.right = node
+        node.left = self
+        return old
 
-class LinkedList(_MS): # pylint: disable=too-many-ancestors
+    def link_as_left(self, node):
+        '''Set node as left link, and self as node's right link.
+        Return self's previous left node.'''
+        old = self.left
+        self.left = node
+        node.right = self
+        return old
+
+
+class LinkedList(_MS):  # pylint: disable=too-many-ancestors
     '''A simplified, doubly-linked list.'''
 
     def __init__(self, collection: _Col = None):
         self.head = _Node(None, None, None)
-        self.tail = _Node(None, self.head, None)
-        self.head.right = self.tail
+        self.tail = _Node(None, None, None)
+        self.head.link_as_right(self.tail)
         self.count = 0
         if collection:
             self.extend(collection)
@@ -42,21 +58,22 @@ class LinkedList(_MS): # pylint: disable=too-many-ancestors
             raise IndexError(f'{self_type.__name__} index out of range')
         return index
 
-    def __len__(self):
-        return self.count
-
-    def __getitem__(self, index):
-        index = self._verify_index(index)
-        return self._getnode(index + 1).value
-
     def _getnode(self, index):
-        '''Get node by index.'''
+        '''Get node by index for insertion.
+        Return the node whose right link should be at the given index.'''
         cur = self.head
         idx = 0
         while cur.right is not self.tail and idx < index:
             cur = cur.right
             idx += 1
         return cur
+
+    def __len__(self):
+        return self.count
+
+    def __getitem__(self, index):
+        index = self._verify_index(index)
+        return self._getnode(index + 1).value
 
     def __setitem__(self, index, value):
         index = self._verify_index(index)
@@ -65,8 +82,7 @@ class LinkedList(_MS): # pylint: disable=too-many-ancestors
     def __delitem__(self, index):
         index = self._verify_index(index)
         cur = self._getnode(index + 1)
-        left, right = cur.left, cur.right
-        left.right, right.left = cur.right, cur.left
+        cur.left.link_as_right(cur.right)
         self.count -= 1
 
     def insert(self, index, value):
@@ -74,5 +90,13 @@ class LinkedList(_MS): # pylint: disable=too-many-ancestors
         left = self._getnode(index)
         right = left.right
         node = _Node(value, left, right)
-        left.right, right.left = node, node
+        left.link_as_right(node)
+        right.link_as_left(node)
+        self.count += 1
+
+    def append(self, value):
+        prev = self.tail.left
+        node = _Node(value, prev, self.tail)
+        prev.link_as_right(node)
+        self.tail.link_as_left(node)
         self.count += 1

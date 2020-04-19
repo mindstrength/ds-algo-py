@@ -31,7 +31,7 @@ class LinkedListTest(_ut.TestCase):
 
     def test_getitem_index_upper_bound(self):
         '''Upper bound should return last element.'''
-        self.list.extend('ab')
+        self.list = LinkedList('ab')
         self.assertEqual('b', self.list[1])
         self.assertEqual('b', self.list[-1])
 
@@ -43,7 +43,7 @@ class LinkedListTest(_ut.TestCase):
 
     def test_setitem_index_upper_boud(self):
         '''Upper bound should set last element.'''
-        self.list.extend('ab')
+        self.list = LinkedList('ab')
         self.list[1] = 'c'
         self.assertEqual('c', self.list[1])
         self.list[-1] = 'd'
@@ -57,7 +57,7 @@ class LinkedListTest(_ut.TestCase):
 
     def test_delitem_index_upper_boud(self):
         '''Upper bound should delete last element.'''
-        self.list.extend('abc')
+        self.list = LinkedList('abc')
         del self.list[2]
         self.assertEqual('b', self.list[1])
         del self.list[-1]
@@ -68,4 +68,9 @@ class LinkedListTest(_ut.TestCase):
         self.list.insert(0, 'b')
         self.list.insert(0, 'a')
         self.list.insert(len(self.list), 'c')
-        self.assertSequenceEqual(['a', 'b', 'c'], self.list)
+        self.assertSequenceEqual('abc', self.list)
+
+    def test_extend_collection(self):
+        '''Extend should append the elements of other collection.'''
+        self.list.extend('abc')
+        self.assertSequenceEqual('abc', self.list)
