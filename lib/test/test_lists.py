@@ -1,7 +1,7 @@
-'''Unit tests for linkedlist module.'''
+'''Unit tests for 'lists' module.'''
 
 import unittest as _ut
-from linkedlist import LinkedList
+from lists import LinkedList
 
 class LinkedListTest(_ut.TestCase):
     '''Unit tests for LinkedList class.'''

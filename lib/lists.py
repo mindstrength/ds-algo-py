@@ -1,16 +1,16 @@
-'''A simplified, doubly-linked list.'''
+'''Basic list implementations.'''
 
 from dataclasses import dataclass as _data
 from typing import Any as _Any
-from collections.abc import MutableSequence as _MS, Collection as _Col
+from collections.abc import MutableSequence as _MS, Iterable as _Itbl
 
 
 @_data
 class _Node:
     '''A node within a linked list.'''
-    value: _Any
-    left: _Any
-    right: _Any
+    value: _Any = None
+    left: _Any = None
+    right: _Any = None
 
     def link_as_right(self, node):
         '''Set node as right link, and self as node's left link.
@@ -32,15 +32,15 @@ class _Node:
 class LinkedList(_MS):  # pylint: disable=too-many-ancestors
     '''A simplified, doubly-linked list.'''
 
-    def __init__(self, collection: _Col = None):
-        self.head = _Node(None, None, None)
-        self.tail = _Node(None, None, None)
-        self.head.link_as_right(self.tail)
-        self.count = 0
-        if collection:
-            self.extend(collection)
+    def __init__(self, iterable: _Itbl = None):
+        self._head = _Node()
+        self._tail = _Node()
+        self._head.link_as_right(self._tail)
+        self._count = 0
+        if iterable:
+            self.extend(iterable)
 
-    def _verify_index(self, index, inclusive=False):
+    def _verify_index(self, index, inclusive: bool = False):
         valid_index_types = (int,)
         index_type = type(index)
         self_type = type(self)
@@ -61,15 +61,15 @@ class LinkedList(_MS):  # pylint: disable=too-many-ancestors
     def _getnode(self, index):
         '''Get node by index for insertion.
         Return the node whose right link should be at the given index.'''
-        cur = self.head
+        cur = self._head
         idx = 0
-        while cur.right is not self.tail and idx < index:
+        while cur.right is not self._tail and idx < index:
             cur = cur.right
             idx += 1
         return cur
 
     def __len__(self):
-        return self.count
+        return self._count
 
     def __getitem__(self, index):
         index = self._verify_index(index)
@@ -83,33 +83,33 @@ class LinkedList(_MS):  # pylint: disable=too-many-ancestors
         index = self._verify_index(index)
         cur = self._getnode(index + 1)
         cur.left.link_as_right(cur.right)
-        self.count -= 1
+        self._count -= 1
 
     def __iter__(self):
-        cur = self.head
-        while cur.right is not self.tail:
+        cur = self._head
+        while cur.right is not self._tail:
             cur = cur.right
             yield cur.value
 
     def __reversed__(self):
-        cur = self.tail
-        while cur.left is not self.head:
+        cur = self._tail
+        while cur.left is not self._head:
             cur = cur.left
             yield cur.value
 
     def reverse(self):
-        old_head, old_tail = self.head, self.tail
-        cur = self.head
+        old_head, old_tail = self._head, self._tail
+        cur = self._head
         while cur is not None:
             old_left, old_right = cur.left, cur.right
             cur.left = cur.right
             cur.right = old_left
             cur = old_right
-        self.head, self.tail = old_tail, old_head
+        self._head, self._tail = old_tail, old_head
 
     def clear(self):
-        self.head.link_as_right(self.tail)
-        self.count = 0
+        self._head.link_as_right(self._tail)
+        self._count = 0
 
     def insert(self, index, value):
         index = self._verify_index(index, inclusive=True)
@@ -118,11 +118,11 @@ class LinkedList(_MS):  # pylint: disable=too-many-ancestors
         node = _Node(value, left, right)
         left.link_as_right(node)
         right.link_as_left(node)
-        self.count += 1
+        self._count += 1
 
     def append(self, value):
-        prev = self.tail.left
-        node = _Node(value, prev, self.tail)
+        prev = self._tail.left
+        node = _Node(value, prev, self._tail)
         prev.link_as_right(node)
-        self.tail.link_as_left(node)
-        self.count += 1
+        self._tail.link_as_left(node)
+        self._count += 1
