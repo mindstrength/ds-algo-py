@@ -75,3 +75,11 @@ class MapTrieTest(_ut.TestCase):
         self.trie = MapTrie(['ab', 'abc', 'abd', 'efg'])
         self.trie.discard('abd')
         self.assertEqual(3, len(self.trie))
+
+    def test_iter(self):
+        '''Iter should return iterator over all values.'''
+        entries = ['a', 'ab', 'ac', 'acde', 'acfg', 'bar', 'baz']
+        self.trie = MapTrie(entries)
+        trie_iter = iter(self.trie)
+        result = { ''.join(entry) for entry in trie_iter }
+        self.assertSetEqual(set(entries), result)

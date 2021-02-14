@@ -1,8 +1,17 @@
 '''Basic list implementations.'''
 
-from dataclasses import dataclass as _data
-from typing import Any as _Any
-from collections.abc import MutableSequence as _MS, Iterable as _Itbl
+from dataclasses import (
+    dataclass as _data
+)
+
+from typing import (
+    Any as _Any
+)
+
+from collections.abc import (
+    MutableSequence as _MS,
+    Iterable as _Itbl
+)
 
 
 @_data

@@ -1,19 +1,18 @@
 '''Basic trie implementations.'''
 
+from collections import (
+    deque as _Deq
+)
 from collections.abc import (
     MutableSet as _MS,
     Iterable as _Itbl,
     MutableMapping as _MM
 )
 
-from typing import (
-    Any as _Any
-)
-
-class _MapNode:  # pylint: disable=too-few-public-methods
+class _MapTrieNode:  # pylint: disable=too-few-public-methods
     '''A node within a MapTrie.'''
 
-    def __init__(self, value: _Any = None, children: _MM = None,
+    def __init__(self, value = None, children: _MM = None,
                  word: bool = False):
         self.value = value
         self.children = children or dict()
@@ -22,11 +21,11 @@ class _MapNode:  # pylint: disable=too-few-public-methods
 class MapTrie(_MS):
     '''A simplified, mapping-backed trie.'''
 
-    def __init__(self, iterable: _Itbl = None):
-        self._root = _MapNode()
+    def __init__(self, values: _Itbl = None):
+        self._root = _MapTrieNode()
         self._count = 0
-        if iterable:
-            for val in iterable:
+        if values:
+            for val in values:
                 self.add(val)
 
     def __contains__(self, value: _Itbl):
@@ -39,7 +38,26 @@ class MapTrie(_MS):
         return bool(cur and cur.word)
 
     def __iter__(self):
-        pass # TODO: implement '__iter__'.
+        def dfs_find_word(node: _MapTrieNode):
+            node_queue = _Deq()
+            node_queue.append((1, node)) # (depth, node)
+            cur_word = []
+            while node_queue:
+                # pop node.
+                cur_depth, cur_node = node_queue.pop()
+                # visit node.
+                cur_word = cur_word[:cur_depth - 1]
+                cur_word.append(cur_node.value)
+                if cur_node.word:
+                    entries.append(cur_word)
+                # push node's children.
+                for cur_child in cur_node.children.values():
+                    node_queue.append((cur_depth + 1, cur_child))
+        entries = []
+        for root_child in self._root.children.values():
+            dfs_find_word(root_child)
+        return iter(entries)
+
 
     def __len__(self):
         return self._count
@@ -49,7 +67,7 @@ class MapTrie(_MS):
         for elem in value:
             child = cur.children.get(elem)
             if not child:
-                child = _MapNode(elem)
+                child = _MapTrieNode(elem)
                 cur.children[elem] = child
             cur = child
         if cur is self._root or cur.word:
