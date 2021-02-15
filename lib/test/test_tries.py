@@ -76,10 +76,32 @@ class MapTrieTest(_ut.TestCase):
         self.trie.discard('abd')
         self.assertEqual(3, len(self.trie))
 
-    def test_iter(self):
-        '''Iter should return iterator over all values.'''
+    def test_iter_default_mapper(self):
+        '''Iter with default mapper should return iterator over all values.'''
         entries = ['a', 'ab', 'ac', 'acde', 'acfg', 'bar', 'baz']
         self.trie = MapTrie(entries)
         trie_iter = iter(self.trie)
         result = { ''.join(entry) for entry in trie_iter }
         self.assertSetEqual(set(entries), result)
+
+    def test_iter_custom_mapper(self):
+        '''Iter with custom mapper should return iterator over all values.'''
+        entries = ['a', 'ab', 'ac', 'acde', 'acfg', 'bar', 'baz']
+        self.trie = MapTrie(entries, ''.join)
+        trie_iter = iter(self.trie)
+        result = set(trie_iter)
+        self.assertSetEqual(set(entries), result)
+
+    def test_values_with_prefix_no_match(self):
+        '''Prefix search with no match returns empty sequence.'''
+        entries = ['a', 'ab', 'ac', 'acde', 'acfg', 'bar', 'baz']
+        self.trie = MapTrie(entries, ''.join)
+        result = set(self.trie.values_with_prefix('x'))
+        self.assertSetEqual(set(), result)
+
+    def test_values_with_prefix_match(self):
+        '''Prefix search with match returns sequence containing matches.'''
+        entries = ['a', 'ab', 'ac', 'acde', 'acfg', 'bar', 'baz']
+        self.trie = MapTrie(entries, ''.join)
+        result = set(self.trie.values_with_prefix('ac'))
+        self.assertSetEqual(set(('ac', 'acde', 'acfg')), result)

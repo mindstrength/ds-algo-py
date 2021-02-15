@@ -1,29 +1,45 @@
 '''Basic trie implementations.'''
 
+from abc import (
+    ABC as _ABC,
+    abstractmethod as _abstract
+)
+
 from collections import (
     deque as _Deq
 )
 from collections.abc import (
-    MutableSet as _MS,
+    Collection as _Col,
+    MutableSequence as _MSeq,
+    MutableSet as _MSet,
     Iterable as _Itbl,
-    MutableMapping as _MM
+    MutableMapping as _MMap
 )
+
+class Trie(_ABC, _Col): # pylint: disable=too-few-public-methods
+    '''A Trie or prefix tree abstract base class.'''
+    @_abstract
+    def values_with_prefix(self, prefix):
+        '''Get values matching the prefix.'''
+        return []
+
 
 class _MapTrieNode:  # pylint: disable=too-few-public-methods
     '''A node within a MapTrie.'''
 
-    def __init__(self, value = None, children: _MM = None,
+    def __init__(self, value = None, children: _MMap = None,
                  word: bool = False):
         self.value = value
         self.children = children or dict()
         self.word = word
 
-class MapTrie(_MS):
+class MapTrie(_MSet, Trie): # pylint: disable=too-many-ancestors
     '''A simplified, mapping-backed trie.'''
 
-    def __init__(self, values: _Itbl = None):
+    def __init__(self, values: _Itbl = None, mapper = list):
         self._root = _MapTrieNode()
         self._count = 0
+        self._mapper = mapper
         if values:
             for val in values:
                 self.add(val)
@@ -35,29 +51,31 @@ class MapTrie(_MS):
             if not child:
                 return False
             cur = child
-        return bool(cur and cur.word)
+        return cur.word
+
+    def _dfs_find_words(self, node: _MapTrieNode, accumulator: _MSeq,
+                         transformer = lambda x: x):
+        '''Accumulates the words rooted at the given node.'''
+        node_queue = _Deq()
+        node_queue.append((1, node)) # (depth, node)
+        cur_word = []
+        while node_queue:
+            # pop node.
+            cur_depth, cur_node = node_queue.pop()
+            # visit node.
+            cur_word = cur_word[:cur_depth - 1]
+            cur_word.append(cur_node.value)
+            if cur_node.word:
+                accumulator.append(transformer(self._mapper(cur_word)))
+            # push node's children.
+            for cur_child in cur_node.children.values():
+                node_queue.append((cur_depth + 1, cur_child))
 
     def __iter__(self):
-        def dfs_find_word(node: _MapTrieNode):
-            node_queue = _Deq()
-            node_queue.append((1, node)) # (depth, node)
-            cur_word = []
-            while node_queue:
-                # pop node.
-                cur_depth, cur_node = node_queue.pop()
-                # visit node.
-                cur_word = cur_word[:cur_depth - 1]
-                cur_word.append(cur_node.value)
-                if cur_node.word:
-                    entries.append(cur_word)
-                # push node's children.
-                for cur_child in cur_node.children.values():
-                    node_queue.append((cur_depth + 1, cur_child))
-        entries = []
+        values = []
         for root_child in self._root.children.values():
-            dfs_find_word(root_child)
-        return iter(entries)
-
+            self._dfs_find_words(root_child, values)
+        return iter(values)
 
     def __len__(self):
         return self._count
@@ -110,3 +128,16 @@ class MapTrie(_MS):
     def clear(self):
         self._root.children = dict()
         self._count = 0
+
+    def values_with_prefix(self, prefix):
+        def append_word_ending(ending):
+            return prefix[:len(prefix) - 1] + ending
+        cur = self._root
+        values = []
+        for elem in prefix:
+            child = cur.children.get(elem)
+            if not child:
+                return values
+            cur = child
+        self._dfs_find_words(cur, values, append_word_ending)
+        return values
