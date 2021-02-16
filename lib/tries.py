@@ -89,10 +89,9 @@ class MapTrie(_MSet, Trie): # pylint: disable=too-many-ancestors
                 cur.children[elem] = child
             cur = child
         if cur is self._root or cur.word:
-            return False
+            return
         cur.word = True
         self._count += 1
-        return True
 
     def discard(self, value: _Itbl):
         cur = self._root
@@ -131,7 +130,8 @@ class MapTrie(_MSet, Trie): # pylint: disable=too-many-ancestors
 
     def values_with_prefix(self, prefix):
         def append_word_ending(ending):
-            return prefix[:len(prefix) - 1] + ending
+            return beginning + ending
+        beginning = prefix[:len(prefix) - 1]
         cur = self._root
         values = []
         for elem in prefix:
