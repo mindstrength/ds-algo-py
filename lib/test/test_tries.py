@@ -11,17 +11,15 @@ class MapTrieTest(_ut.TestCase):
     def test_add_unique(self):
         '''Add unique value should increase size by one and return True.'''
         size = len(self.trie)
-        res = self.trie.add('abc')
+        self.trie.add('abc')
         self.assertEqual(size + 1, len(self.trie))
-        self.assertTrue(res)
 
     def test_add_duplicate(self):
         '''Add duplicate value should keep size and return False.'''
         self.trie = MapTrie(['abc'])
         size = len(self.trie)
-        res = self.trie.add('abc')
+        self.trie.add('abc')
         self.assertEqual(size, len(self.trie))
-        self.assertFalse(res)
 
     def test_contains_absent(self):
         '''Contains when absent should return False.'''
