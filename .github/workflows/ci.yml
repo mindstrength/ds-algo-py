@@ -20,11 +20,18 @@ jobs:
           cache: 'pip'
           cache-dependency-path: 'config/pip_requirements.txt'
 
-      - name: Install dependencies
-        run: pip install -r config/pip_requirements.txt
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+        shell: bash
+
+      - name: Create virtual environment and install dependencies
+        run: |
+          uv venv
+          source .venv/bin/activate
+          uv pip install -r config/pip_requirements.txt
 
       - name: Run unit tests
-        run: python -m unittest discover --start-directory lib --verbose
+        run: uv run python -m unittest discover --start-directory lib --verbose
 
       - name: Run pylint
-        run: python -m pylint --ignore test lib
+        run: uv run python -m pylint --ignore test lib
