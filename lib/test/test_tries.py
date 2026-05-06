@@ -97,9 +97,18 @@ class MapTrieTest(_ut.TestCase):
         result = set(self.trie.values_with_prefix('x'))
         self.assertSetEqual(set(), result)
 
-    def test_values_with_prefix_match(self):
+    def test_values_with_prefix_match_custom_mapper(self):
         '''Prefix search with match returns sequence containing matches.'''
         entries = ['a', 'ab', 'ac', 'acde', 'acfg', 'bar', 'baz']
         self.trie = MapTrie(entries, ''.join)
         result = set(self.trie.values_with_prefix('ac'))
         self.assertSetEqual(set(('ac', 'acde', 'acfg')), result)
+
+    def test_values_with_prefix_match_default_mapper(self):
+        '''Prefix search with match returns sequence containing matches.'''
+        entries = ['a', 'ab', 'ac', 'acde', 'acfg', 'bar', 'baz']
+        self.trie = MapTrie(entries)
+        # The default mapper returns lists of characters which are not hashable,
+        # so we convert them to tuples for set comparison.
+        result = set(tuple(item) for item in self.trie.values_with_prefix('ac'))
+        self.assertSetEqual(set((tuple('ac'), tuple('acde'), tuple('acfg'))), result)
