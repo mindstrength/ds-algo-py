@@ -45,15 +45,14 @@ class LinkedList(MutableSequence[T]):
 
     def _verify_index(self, index: int, inclusive: bool = False) -> int:
         valid_index_types = (int,)
-        index_type = type(index)
         self_type = type(self)
         self_len = len(self)
         offset = 1 if inclusive else 0
-        if not issubclass(index_type, valid_index_types):
+        if not isinstance(index, valid_index_types):
             raise TypeError(
                 f'{self_type.__name__} indices '
                 f'must be of the following types: {valid_index_types}; '
-                f'not {index_type.__name__}'
+                f'not {type(index).__name__}'
             )
         if index < 0:
             index = self_len + index
@@ -92,18 +91,18 @@ class LinkedList(MutableSequence[T]):
         self._count -= 1
 
     def __iter__(self) -> Iterator[T]:
-        cur = self._head
-        while cur.right is not self._tail:
-            cur = cur.right
+        cur = self._head.right
+        while cur is not self._tail:
             assert cur.value is not None
             yield cur.value
+            cur = cur.right
 
     def __reversed__(self) -> Iterator[T]:
-        cur = self._tail
-        while cur.left is not self._head:
-            cur = cur.left
+        cur = self._tail.left
+        while cur is not self._head:
             assert cur.value is not None
             yield cur.value
+            cur = cur.left
 
     def reverse(self) -> None:
         old_head, old_tail = self._head, self._tail
