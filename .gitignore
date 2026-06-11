@@ -7,3 +7,11 @@ __pycache__/
 
 ### VSCodium / Visual Studio
 .vscode/
+
+### macOS ###
+# General
+.DS_Store
+.localized
+__MACOSX/
+.AppleDouble
+.LSOverride
