@@ -1,0 +1,12 @@
+[project]
+name = "ds-algo-py"
+version = "0.1.0"
+description = "Data Structure and Algorithm implementations for practice, in Python."
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pylint",
+]
